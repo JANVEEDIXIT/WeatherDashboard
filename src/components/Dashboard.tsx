@@ -13,6 +13,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import AirIcon from "@mui/icons-material/Air";
+import WaterDropOutlinedIcon from "@mui/icons-material/WaterDropOutlined";
 import SpeedIcon from "@mui/icons-material/Speed";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -21,8 +22,11 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import WeatherService from "../services/WeatherService";
 import WeatherDashboard from "./WeatherDashboard";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Margin } from "@mui/icons-material";
 
 const drawerWidth = 240;
+
+const logo = require("../images/logo.png");
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
@@ -50,14 +54,13 @@ const Drawer = styled(MuiDrawer, {
 
 const WIDGETS = [
   { title: "Temperature", icon: <ThermostatIcon />, dataKey: "temp" },
-  { title: "Humidity", icon: <AirIcon />, dataKey: "humidity" },
+  { title: "Humidity", icon: <WaterDropOutlinedIcon />, dataKey: "humidity" },
   { title: "Pressure", icon: <SpeedIcon />, dataKey: "pressure" },
   { title: "Wind Speed", icon: <AirIcon />, dataKey: "speed" },
   { title: "Timezone", icon: <AccessTimeIcon />, dataKey: "timezone" },
 ];
 
 export default function Dashboard() {
-  // const logo = require("../images/logo.png");
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Adjust breakpoint as needed
   const [weatherData, setWeatherData] = React.useState<any>(null);
@@ -86,6 +89,10 @@ export default function Dashboard() {
     }
   };
 
+  const removeWidget = (key: string) => {
+    setSelectedDataKeys((prevKeys) => prevKeys.filter((item) => item !== key));
+  };
+
   React.useEffect(() => {
     setOpen(!isSmallScreen); // Close drawer on small screens
   }, [isSmallScreen]);
@@ -103,8 +110,14 @@ export default function Dashboard() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {/* <img src={logo} alt="logo"></img> */}
+          <img
+            src={logo}
+            alt="logo"
+            height={50}
+            width={50}
+            style={{ marginLeft: 8 }}
+          />
+          <Typography variant="h6" noWrap component="div" sx={{ ml: 8 }}>
             Weather Dashboard
           </Typography>
         </Toolbar>
@@ -145,6 +158,7 @@ export default function Dashboard() {
           <WeatherDashboard
             weatherData={weatherData}
             selectedDataKeys={selectedDataKeys}
+            removeSelectedWidget={removeWidget}
           />
         ) : (
           <Typography>Loading...</Typography>

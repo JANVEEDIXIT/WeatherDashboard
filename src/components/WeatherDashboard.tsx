@@ -5,6 +5,12 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import ThermostatTwoToneIcon from "@mui/icons-material/ThermostatTwoTone";
+import WaterDropTwoToneIcon from "@mui/icons-material/WaterDropTwoTone";
+import CompressTwoToneIcon from "@mui/icons-material/CompressTwoTone";
+import AirTwoToneIcon from "@mui/icons-material/AirTwoTone";
+import AccessTimeTwoToneIcon from "@mui/icons-material/AccessTimeTwoTone";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface WeatherData {
   timezone: number;
@@ -23,11 +29,13 @@ interface WeatherData {
 interface WeatherDashboardProps {
   weatherData: WeatherData | null;
   selectedDataKeys: string[];
+  removeSelectedWidget: (key: string) => void;
 }
 
 export default function WeatherDashboard({
   weatherData,
   selectedDataKeys,
+  removeSelectedWidget,
 }: WeatherDashboardProps) {
   const [degree, setDegree] = useState("celcius");
 
@@ -36,7 +44,7 @@ export default function WeatherDashboard({
     newDegree: string
   ) => {
     if (newDegree !== null) {
-      setDegree(newDegree); // Update degree to either "celcius" or "fahrenheit"
+      setDegree(newDegree); // Update degree to either "celsius" or "fahrenheit"
     }
   };
 
@@ -76,9 +84,15 @@ export default function WeatherDashboard({
             {selectedDataKeys.map((key) => {
               let label = "";
               let value = "";
+              let IconComponent = null; // Initialize icon component to null
 
               if (key === "temp") {
                 label = "Temperature";
+                IconComponent = (
+                  <ThermostatTwoToneIcon
+                    sx={{ fontSize: "3rem", color: "red" }}
+                  />
+                );
                 if (degree === "celcius") {
                   value = `${(weatherData.main.temp - 273.15).toFixed(1)} °C`;
                 } else {
@@ -87,18 +101,36 @@ export default function WeatherDashboard({
               } else if (key === "humidity") {
                 label = "Humidity";
                 value = `${weatherData.main.humidity} %`;
+                IconComponent = (
+                  <WaterDropTwoToneIcon
+                    sx={{ fontSize: "3rem", color: "blue" }}
+                  />
+                );
               } else if (key === "pressure") {
                 label = "Pressure";
                 value = `${weatherData.main.pressure} hPa`;
+                IconComponent = (
+                  <CompressTwoToneIcon
+                    sx={{ fontSize: "3rem", color: "gray" }}
+                  />
+                );
               } else if (key === "speed") {
                 label = "Wind Speed";
                 value = `${weatherData.wind.speed} m/s`;
+                IconComponent = (
+                  <AirTwoToneIcon sx={{ fontSize: "3rem", color: "green" }} />
+                );
               } else if (key === "timezone") {
                 label = "Timezone";
                 value = `${weatherData.timezone}`;
+                IconComponent = (
+                  <AccessTimeTwoToneIcon
+                    sx={{ fontSize: "3rem", color: "orange" }}
+                  />
+                );
               }
 
-              // Return a box containing label and value for each data point
+              // Return a box containing label, value, and icon for each data point
               return (
                 <Box
                   key={key}
@@ -109,12 +141,24 @@ export default function WeatherDashboard({
                     borderRadius: 1,
                     padding: 2,
                     textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
+                  <CloseIcon
+                    sx={{
+                      marginLeft: 55,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => removeSelectedWidget(key)}
+                  />
+                  {IconComponent} {/* Render the appropriate icon */}
                   <Typography
                     variant="h6"
                     component="div"
-                    sx={{ fontWeight: "bold" }}
+                    sx={{ fontWeight: "bold", mt: 1 }}
                   >
                     {label}
                   </Typography>
