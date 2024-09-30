@@ -22,7 +22,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import WeatherService from "../services/WeatherService";
 import WeatherDashboard from "./WeatherDashboard";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Margin } from "@mui/icons-material";
+import { TemperatureProvider } from "./TemperatureContext"; // Adjust the path as necessary
 
 const drawerWidth = 240;
 
@@ -98,72 +98,74 @@ export default function Dashboard() {
   }, [isSmallScreen]);
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerToggle}
-            edge="start"
-            sx={{ mr: 2 }}
+    <TemperatureProvider>
+      <Box sx={{ display: "flex" }}>
+        <AppBar position="fixed">
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerToggle}
+              edge="start"
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <img
+              src={logo}
+              alt="logo"
+              height={50}
+              width={50}
+              style={{ marginLeft: 8 }}
+            />
+            <Typography variant="h6" noWrap component="div" sx={{ ml: 8 }}>
+              Weather Dashboard
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              p: 1,
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-          <img
-            src={logo}
-            alt="logo"
-            height={50}
-            width={50}
-            style={{ marginLeft: 8 }}
-          />
-          <Typography variant="h6" noWrap component="div" sx={{ ml: 8 }}>
-            Weather Dashboard
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            p: 1,
-          }}
-        >
-          <IconButton onClick={handleDrawerToggle}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
+            <IconButton onClick={handleDrawerToggle}>
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </Box>
+          <List>
+            {WIDGETS.map((widget) => (
+              <ListItem key={widget.title} disablePadding>
+                <ListItemButton onClick={() => handleDataClick(widget.dataKey)}>
+                  <ListItemIcon>{widget.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={open ? widget.title : ""}
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {weatherData ? (
+            <WeatherDashboard
+              weatherData={weatherData}
+              selectedDataKeys={selectedDataKeys}
+              removeSelectedWidget={removeWidget}
+            />
+          ) : (
+            <Typography>Loading...</Typography>
+          )}
         </Box>
-        <List>
-          {WIDGETS.map((widget) => (
-            <ListItem key={widget.title} disablePadding>
-              <ListItemButton onClick={() => handleDataClick(widget.dataKey)}>
-                <ListItemIcon>{widget.icon}</ListItemIcon>
-                <ListItemText
-                  primary={open ? widget.title : ""}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {weatherData ? (
-          <WeatherDashboard
-            weatherData={weatherData}
-            selectedDataKeys={selectedDataKeys}
-            removeSelectedWidget={removeWidget}
-          />
-        ) : (
-          <Typography>Loading...</Typography>
-        )}
       </Box>
-    </Box>
+    </TemperatureProvider>
   );
 }

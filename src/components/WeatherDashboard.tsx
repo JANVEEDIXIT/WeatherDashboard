@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   ToggleButton,
@@ -11,6 +11,7 @@ import CompressTwoToneIcon from "@mui/icons-material/CompressTwoTone";
 import AirTwoToneIcon from "@mui/icons-material/AirTwoTone";
 import AccessTimeTwoToneIcon from "@mui/icons-material/AccessTimeTwoTone";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTemperature } from "./TemperatureContext"; // Adjust the path as necessary
 
 interface WeatherData {
   timezone: number;
@@ -37,7 +38,7 @@ export default function WeatherDashboard({
   selectedDataKeys,
   removeSelectedWidget,
 }: WeatherDashboardProps) {
-  const [degree, setDegree] = useState("celcius");
+  const { degree, setDegree } = useTemperature(); // Get degree and setDegree from context
 
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -100,34 +101,26 @@ export default function WeatherDashboard({
                 }
               } else if (key === "humidity") {
                 label = "Humidity";
-                value = `${weatherData.main.humidity} %`;
                 IconComponent = (
-                  <WaterDropTwoToneIcon
-                    sx={{ fontSize: "3rem", color: "blue" }}
-                  />
+                  <WaterDropTwoToneIcon sx={{ fontSize: "3rem" }} />
                 );
+                value = `${weatherData.main.humidity} %`;
               } else if (key === "pressure") {
                 label = "Pressure";
-                value = `${weatherData.main.pressure} hPa`;
                 IconComponent = (
-                  <CompressTwoToneIcon
-                    sx={{ fontSize: "3rem", color: "gray" }}
-                  />
+                  <CompressTwoToneIcon sx={{ fontSize: "3rem" }} />
                 );
+                value = `${weatherData.main.pressure} hPa`;
               } else if (key === "speed") {
                 label = "Wind Speed";
+                IconComponent = <AirTwoToneIcon sx={{ fontSize: "3rem" }} />;
                 value = `${weatherData.wind.speed} m/s`;
-                IconComponent = (
-                  <AirTwoToneIcon sx={{ fontSize: "3rem", color: "green" }} />
-                );
               } else if (key === "timezone") {
                 label = "Timezone";
-                value = `${weatherData.timezone}`;
                 IconComponent = (
-                  <AccessTimeTwoToneIcon
-                    sx={{ fontSize: "3rem", color: "orange" }}
-                  />
+                  <AccessTimeTwoToneIcon sx={{ fontSize: "3rem" }} />
                 );
+                value = `UTC ${weatherData.timezone / 3600}`;
               }
 
               // Return a box containing label, value, and icon for each data point
